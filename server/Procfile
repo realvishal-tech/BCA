@@ -1,0 +1,3 @@
+# BCA Student Portal - Render Deployment Configuration
+
+web: npm start

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BCA Student Portal - Admin Dashboard</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px;">
+    <div class="navbar" style="margin-bottom: 20px;">
+      <div class="navbar-brand">🔐 Admin Dashboard</div>
+      <div class="navbar-links">
+        <button id="adminLogoutBtn" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; cursor: pointer; font-weight: 500;">Logout</button>
+      </div>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <div id="usersTab" class="sidebar-item active">👥 Registered Users</div>
+          <div id="activitiesTab" class="sidebar-item">📊 Activity Logs</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+          <!-- Users Section -->
+          <div id="usersSection" class="section active">
+            <h2 style="color: white; margin-bottom: 20px;">👥 Registered Users</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Registration Date</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable">
+                  <tr>
+                    <td colspan="4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Activities Section -->
+          <div id="activitiesSection" class="section">
+            <h2 style="color: white; margin-bottom: 20px;">📊 Activity Logs</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Action</th>
+                    <th>Page</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="activitiesTable">
+                  <tr>
+                    <td colspan="4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BCA Student Portal - Register</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1 class="heading">📝 Create Account</h1>
+      <p class="subheading">Register to access BCA Student Portal</p>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            placeholder="Enter your first name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            placeholder="Enter your last name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Gmail Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your.email@gmail.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Min 6 chars (letter + number)"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="course">Course</label>
+          <select id="course" name="course" required>
+            <option value="">Select your course</option>
+            <option value="BCA">BCA</option>
+          </select>
+        </div>
+
+        <button type="submit">Register</button>
+      </form>
+
+      <div class="link-text">
+        Already have an account? <a href="./index.html">Login here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="./assets/script.js"></script>
+</body>
+</html>
