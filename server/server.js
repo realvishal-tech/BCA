@@ -108,6 +108,15 @@ const authenticateToken = (req, res, next) => {
 
 // ===== API ROUTES =====
 
+// 0. HEALTH CHECK (for frontend to verify backend is running)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    message: 'Backend is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // 1. REGISTER
 app.post('/api/register', async (req, res) => {
   try {

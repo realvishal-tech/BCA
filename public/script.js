@@ -49,7 +49,25 @@ function isValidPassword(password) {
   return password.length >= 6 && /[a-zA-Z]/.test(password) && /[0-9]/.test(password);
 }
 
+// Helper function to handle button loading state
+function setButtonLoading(button, isLoading, originalText = null) {
+  if (isLoading) {
+    button.disabled = true;
+    button.setAttribute('data-original-text', button.textContent);
+    button.innerHTML = '⏳ Loading...';
+    button.style.opacity = '0.6';
+    button.style.cursor = 'not-allowed';
+  } else {
+    button.disabled = false;
+    button.textContent = originalText || button.getAttribute('data-original-text') || 'Submit';
+    button.style.opacity = '1';
+    button.style.cursor = 'pointer';
+  }
+}
+
 function makeApiCall(method, endpoint, data = null) {
+  const timeout = typeof CONFIG !== 'undefined' ? CONFIG.getTimeout() : 30000;
+  
   const options = {
     method,
     headers: {
@@ -66,13 +84,43 @@ function makeApiCall(method, endpoint, data = null) {
     options.headers['Authorization'] = `Bearer ${token}`;
   }
 
-  return fetch(`${API_BASE}${endpoint}`, options).then(response => {
-    if (response.status === 401 || response.status === 403) {
-      removeToken();
-      window.location.href = 'index.html';
-    }
-    return response.json();
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  return fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    signal: controller.signal
+  })
+    .then(response => {
+      clearTimeout(timeoutId);
+      
+      if (response.status === 401 || response.status === 403) {
+        removeToken();
+        window.location.href = 'index.html';
+        return { error: 'Session expired. Please login again.' };
+      }
+      
+      if (!response.ok && response.status !== 400 && response.status !== 404) {
+        console.error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      
+      return response.json();
+    })
+    .catch(error => {
+      clearTimeout(timeoutId);
+      
+      if (error.name === 'AbortError') {
+        console.error('Request timeout - Backend may be offline');
+        return { 
+          error: 'Request timeout. Backend server may be down. Please try again later.' 
+        };
+      }
+      
+      console.error('API Call Error:', error);
+      return { 
+        error: error.message || 'Network error. Please check your connection.' 
+      };
+    });
 }
 
 function trackActivity(action, page) {
@@ -94,6 +142,7 @@ function initRegisterPage() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const submitBtn = form.querySelector('button[type="submit"]');
     const firstName = document.getElementById('firstName').value.trim();
     const lastName = document.getElementById('lastName').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -115,6 +164,8 @@ function initRegisterPage() {
       return;
     }
 
+    setButtonLoading(submitBtn, true);
+
     try {
       const response = await makeApiCall('POST', '/api/register', {
         firstName,
@@ -126,6 +177,7 @@ function initRegisterPage() {
 
       if (response.error) {
         showMessage(form, response.error, 'error');
+        setButtonLoading(submitBtn, false, 'Register');
       } else {
         showMessage(form, response.message, 'success');
         setTimeout(() => {
@@ -134,6 +186,7 @@ function initRegisterPage() {
       }
     } catch (err) {
       showMessage(form, 'Registration failed. Please try again.', 'error');
+      setButtonLoading(submitBtn, false, 'Register');
     }
   });
 }
@@ -151,6 +204,7 @@ function initLoginPage() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const submitBtn = form.querySelector('button[type="submit"]');
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
 
@@ -158,6 +212,8 @@ function initLoginPage() {
       showMessage(form, 'Email and password are required', 'error');
       return;
     }
+
+    setButtonLoading(submitBtn, true);
 
     try {
       const response = await makeApiCall('POST', '/api/login', {
@@ -167,6 +223,7 @@ function initLoginPage() {
 
       if (response.error) {
         showMessage(form, response.error, 'error');
+        setButtonLoading(submitBtn, false, 'Login');
       } else {
         setToken(response.token);
         showMessage(form, 'Login successful! Redirecting...', 'success');
@@ -175,6 +232,11 @@ function initLoginPage() {
         }, 1500);
       }
     } catch (err) {
+      showMessage(form, 'Login failed. Please try again.', 'error');
+      setButtonLoading(submitBtn, false, 'Login');
+    }
+  });
+}
       showMessage(form, 'Login failed. Please try again.', 'error');
     }
   });
@@ -242,6 +304,7 @@ function initAdminPage() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const submitBtn = form.querySelector('button[type="submit"]');
     const email = document.getElementById('adminEmail').value.trim();
     const password = document.getElementById('adminPassword').value;
 
@@ -249,6 +312,8 @@ function initAdminPage() {
       showMessage(form, 'Email and password are required', 'error');
       return;
     }
+
+    setButtonLoading(submitBtn, true);
 
     try {
       const response = await makeApiCall('POST', '/api/admin-login', {
@@ -258,6 +323,7 @@ function initAdminPage() {
 
       if (response.error) {
         showMessage(form, response.error, 'error');
+        setButtonLoading(submitBtn, false, 'Admin Login');
       } else {
         setToken(response.token);
         showMessage(form, 'Admin login successful! Redirecting...', 'success');
@@ -267,6 +333,7 @@ function initAdminPage() {
       }
     } catch (err) {
       showMessage(form, 'Admin login failed. Please try again.', 'error');
+      setButtonLoading(submitBtn, false, 'Admin Login');
     }
   });
 }
