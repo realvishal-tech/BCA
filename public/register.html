@@ -12,31 +12,39 @@
       <h1 class="heading">📝 Create Account</h1>
       <p class="subheading">Register to access BCA Student Portal</p>
 
-      <form id="registerForm">
+      <form id="registerForm" novalidate>
+        <div id="formMessages"></div>
+        
         <div class="form-group">
-          <label for="firstName">First Name</label>
+          <label for="firstName">First Name *</label>
           <input
             type="text"
             id="firstName"
             name="firstName"
             placeholder="Enter your first name"
+            minlength="2"
+            maxlength="50"
             required
           />
+          <small class="error-text" id="firstNameError"></small>
         </div>
 
         <div class="form-group">
-          <label for="lastName">Last Name</label>
+          <label for="lastName">Last Name *</label>
           <input
             type="text"
             id="lastName"
             name="lastName"
             placeholder="Enter your last name"
+            minlength="2"
+            maxlength="50"
             required
           />
+          <small class="error-text" id="lastNameError"></small>
         </div>
 
         <div class="form-group">
-          <label for="email">Gmail Address</label>
+          <label for="email">Gmail Address *</label>
           <input
             type="email"
             id="email"
@@ -44,28 +52,36 @@
             placeholder="your.email@gmail.com"
             required
           />
+          <small class="helper-text">Only Gmail addresses allowed</small>
+          <small class="error-text" id="emailError"></small>
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">Password *</label>
           <input
             type="password"
             id="password"
             name="password"
             placeholder="Min 6 chars (letter + number)"
+            minlength="6"
+            maxlength="50"
             required
           />
+          <small class="helper-text">At least 6 characters with 1 letter & 1 number</small>
+          <small class="error-text" id="passwordError"></small>
         </div>
 
         <div class="form-group">
-          <label for="course">Course</label>
+          <label for="course">Course *</label>
           <select id="course" name="course" required>
             <option value="">Select your course</option>
-            <option value="BCA">BCA</option>
+            <option value="BCA">BCA - Bachelor of Computer Applications</option>
           </select>
+          <small class="error-text" id="courseError"></small>
         </div>
 
-        <button type="submit">Register</button>
+        <button type="submit" id="registerBtn" class="btn-submit">Register</button>
+        <p class="form-hint">* All fields are required</p>
       </form>
 
       <div class="link-text">

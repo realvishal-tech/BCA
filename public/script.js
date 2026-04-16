@@ -134,10 +134,102 @@ function trackActivity(action, page) {
 
 // ===== PAGE SPECIFIC FUNCTIONS =====
 
+// Helper function to show registration form
+function showFormMessage(message, type) {
+  const container = document.getElementById('formMessages');
+  if (!container) return;
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${type}`;
+  messageDiv.textContent = message;
+  
+  container.innerHTML = '';
+  container.appendChild(messageDiv);
+  
+  if (type === 'error') {
+    setTimeout(() => messageDiv.remove(), 5000);
+  }
+}
+
+// Clear all field errors
+function clearAllErrors() {
+  const errorElements = document.querySelectorAll('.error-text');
+  errorElements.forEach(el => el.textContent = '');
+}
+
+// Show field-specific error
+function showFieldError(fieldId, message) {
+  const errorElement = document.getElementById(`${fieldId}Error`);
+  if (errorElement) {
+    errorElement.textContent = message;
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.style.borderColor = '#ff6b6b';
+      field.style.background = 'rgba(255, 107, 107, 0.1)';
+    }
+  }
+}
+
+// Validate individual field
+function validateField(field) {
+  const fieldId = field.id;
+  const value = field.value.trim();
+  const errorElement = document.getElementById(`${fieldId}Error`);
+
+  if (!errorElement) return;
+
+  let error = '';
+
+  switch (fieldId) {
+    case 'firstName':
+    case 'lastName':
+      if (value && value.length < 2) {
+        error = 'Must be at least 2 characters';
+      }
+      break;
+    case 'email':
+      if (value && !isValidGmail(value)) {
+        error = 'Please enter a valid Gmail address';
+      }
+      break;
+    case 'password':
+      if (value && !isValidPassword(value)) {
+        error = '6+ chars needed (1 letter + 1 number)';
+      }
+      break;
+    case 'course':
+      if (!value) {
+        error = 'Please select a course';
+      }
+      break;
+  }
+
+  errorElement.textContent = error;
+  
+  if (error) {
+    field.style.borderColor = '#ff6b6b';
+    field.style.background = 'rgba(255, 107, 107, 0.1)';
+  } else if (value) {
+    field.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+    field.style.background = 'rgba(16, 185, 129, 0.1)';
+  } else {
+    field.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+    field.style.background = 'rgba(255, 255, 255, 0.1)';
+  }
+}
+
 // REGISTER PAGE
 function initRegisterPage() {
   const form = document.getElementById('registerForm');
   if (!form) return;
+
+  const inputs = form.querySelectorAll('input, select');
+  
+  // Real-time validation
+  inputs.forEach(input => {
+    input.addEventListener('blur', () => validateField(input));
+    input.addEventListener('change', () => validateField(input));
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -147,20 +239,52 @@ function initRegisterPage() {
     const lastName = document.getElementById('lastName').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
+    const course = document.getElementById('course').value;
 
-    // Validation
-    if (!firstName || !lastName || !email || !password) {
-      showMessage(form, 'All fields are required', 'error');
-      return;
+    // Clear previous errors
+    clearAllErrors();
+
+    // Comprehensive validation
+    let hasErrors = false;
+
+    if (!firstName) {
+      showFieldError('firstName', 'First name is required');
+      hasErrors = true;
+    } else if (firstName.length < 2) {
+      showFieldError('firstName', 'First name must be at least 2 characters');
+      hasErrors = true;
     }
 
-    if (!isValidGmail(email)) {
-      showMessage(form, 'Only Gmail addresses are allowed', 'error');
-      return;
+    if (!lastName) {
+      showFieldError('lastName', 'Last name is required');
+      hasErrors = true;
+    } else if (lastName.length < 2) {
+      showFieldError('lastName', 'Last name must be at least 2 characters');
+      hasErrors = true;
     }
 
-    if (!isValidPassword(password)) {
-      showMessage(form, 'Password must be at least 6 characters with letter and number', 'error');
+    if (!email) {
+      showFieldError('email', 'Email is required');
+      hasErrors = true;
+    } else if (!isValidGmail(email)) {
+      showFieldError('email', 'Only Gmail addresses are allowed (example@gmail.com)');
+      hasErrors = true;
+    }
+
+    if (!password) {
+      showFieldError('password', 'Password is required');
+      hasErrors = true;
+    } else if (!isValidPassword(password)) {
+      showFieldError('password', 'Password must be 6+ chars with at least 1 letter & 1 number');
+      hasErrors = true;
+    }
+
+    if (!course) {
+      showFieldError('course', 'Please select a course');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
       return;
     }
 
@@ -176,16 +300,16 @@ function initRegisterPage() {
       });
 
       if (response.error) {
-        showMessage(form, response.error, 'error');
+        showFormMessage(response.error, 'error');
         setButtonLoading(submitBtn, false, 'Register');
       } else {
-        showMessage(form, response.message, 'success');
+        showFormMessage('✅ Registration successful! Redirecting to login...', 'success');
         setTimeout(() => {
           window.location.href = 'index.html';
         }, 2000);
       }
     } catch (err) {
-      showMessage(form, 'Registration failed. Please try again.', 'error');
+      showFormMessage('Registration failed. Please check your connection and try again.', 'error');
       setButtonLoading(submitBtn, false, 'Register');
     }
   });
