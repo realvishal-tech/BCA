@@ -1,8 +1,8 @@
 // Get current page
 const currentPage = document.location.pathname.split('/').pop() || 'index.html';
 
-// API Configuration
-const API_BASE = 'http://localhost:5000';
+// API Configuration - Using config.js
+const API_BASE = typeof CONFIG !== 'undefined' ? CONFIG.getApiBase() : 'https://bca-student-portal.onrender.com';
 
 // ===== UTILITY FUNCTIONS =====
 
