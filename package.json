@@ -2,30 +2,27 @@
   "name": "bca-student-portal",
   "version": "1.0.0",
   "description": "BCA Student Portal - Authentication and Activity Tracking System",
-  "main": "server.js",
+  "private": false,
   "engines": {
     "node": "18.x",
     "npm": "9.x"
   },
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "postinstall": "npm prune --production"
+    "start": "cd server && npm start",
+    "dev": "cd server && npm start",
+    "install": "cd server && npm install"
   },
   "keywords": ["bca", "student", "portal", "authentication"],
   "author": "Vishal Kumar",
   "license": "MIT",
-  "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.0.0",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.0",
-    "dotenv": "^16.0.3",
-    "cors": "^2.8.5"
-  },
-  "engines-note": "This ensures compatibility with Render deployment environment",
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/BCA.git"
+  },
+  "deployment": {
+    "platform": "Render.com",
+    "node_version": "18.x",
+    "entry_point": "server/server.js"
   }
 }
+
